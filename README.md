@@ -25,8 +25,9 @@
 - **Frontend**: HTML, CSS, JavaScript
 - **Backend**: Php, CodeIgniter
 - **Database**: MySQL
-- **Authentication**: JWT-based login system
+- **Server**: Apache
 
+---
 
 ## License
 
