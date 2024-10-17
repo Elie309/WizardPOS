@@ -10,9 +10,9 @@
     "test": "tests"
   },
   "dependencies": {
+    "wizardpos": "file:"
   },
   "scripts": {
-    "watch": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css --watch",
     "start": "php spark serve",
     "database": "php spark db:create wizardpos && php spark migrate && php spark db:seed MainSeeder"
   },
