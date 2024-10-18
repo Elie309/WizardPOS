@@ -11,10 +11,9 @@ CREATE TABLE employees (
     
     employee_role ENUM('admin', 'manager', 'user') DEFAULT 'user',
     
-    employee_is_active BOOLEAN DEFAULT 1,
-   
     employee_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    employee_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    employee_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    employee_deleted_at TIMESTAMP NULL
 );
 
 CREATE TABLE clients (

@@ -8,6 +8,6 @@ class MainSeeder extends Seeder
 {
     public function run()
     {
-        //
+        $this->call('App\Database\Seeds\Users\EmployeeSeeder');
     }
 }
