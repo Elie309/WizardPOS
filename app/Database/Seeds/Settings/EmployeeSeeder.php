@@ -10,7 +10,7 @@ class EmployeeSeeder extends Seeder
     {
         $data = [
             [
-                'employee_number' => 1001,
+                'employee_phone_number' => "+961 70 123456",
                 'employee_first_name' => 'John',
                 'employee_last_name' => 'Doe',
                 'employee_email' => 'johndoe@email.com',
@@ -18,7 +18,7 @@ class EmployeeSeeder extends Seeder
                 'employee_password' => password_hash('password', PASSWORD_BCRYPT),
             ],
             [
-                'employee_number' => 1002,
+                'employee_phone_number' => "+961 70 654321",
                 'employee_first_name' => 'Jane',
                 'employee_last_name' => 'Doe',
                 'employee_email' => 'janedoe@email.com',
@@ -26,7 +26,7 @@ class EmployeeSeeder extends Seeder
                 'employee_password' => password_hash('password', PASSWORD_BCRYPT),
             ],
             [
-                'employee_number' => 1003,
+                'employee_phone_number' => "+961 70 987654",
                 'employee_first_name' => 'John',
                 'employee_last_name' => 'Smith',
                 'employee_email' => 'johnsmith@email.com',

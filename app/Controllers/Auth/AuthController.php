@@ -14,12 +14,29 @@ class AuthController extends BaseController
         $employeeEntity = new EmployeeEntity();
         $employeeEntity->fill($this->request->getPost());
 
+
+        if(!($employeeEntity->employee_email || $employeeEntity->employee_phone_number) || !$employeeEntity->employee_password
+         ) {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Email or phone number and password are required',
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+        }
+
         $employeeModel = new EmployeeModel();
-        $employee = $employeeModel->where('employee_email', $employeeEntity->employee_email)->first();
+        $employee = null;
+
+
+        if($employeeEntity->employee_email) {
+            $employee = $employeeModel->where('employee_email', $employeeEntity->employee_email)->first();
+        } else {
+            $employee = $employeeModel->where('employee_phone_number', $employeeEntity->employee_phone_number)->first();
+        }
 
         if ($employee) {
             if (password_verify($employeeEntity->employee_password, $employee->employee_password)) {
-                $this->session->set('number', $employee->employee_number);
+                $this->session->set('email', $employee->employee_email);
                 $this->session->set('role', $employee->employee_role);
                 $this->session->set('isLoggedIn', true);
 

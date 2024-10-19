@@ -8,7 +8,7 @@ class EmployeeEntity extends Entity
 {
     protected $datamap = [
         'id'           => 'employee_id',
-        'phone_number' => 'employee_number',
+        'phone_number' => 'employee_phone_number',
         'email'        => 'employee_email',
         'password'     => 'employee_password',
         'first_name'   => 'employee_first_name',
@@ -19,7 +19,7 @@ class EmployeeEntity extends Entity
     protected $dates   = ['employee_created_at', 'employee_updated_at', 'employee_deleted_at'];
     protected $casts   = [
         'employee_id'           => 'integer',
-        'employee_number'       => 'integer',
+        'employee_phone_number'       => 'string',
         'employee_email'        => 'string',
         'employee_password'     => 'string',
         'employee_first_name'   => 'string',

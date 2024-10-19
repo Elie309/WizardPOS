@@ -1,7 +1,7 @@
 
 CREATE TABLE employees (
     employee_id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_number VARCHAR(15) UNIQUE NOT NULL,
+    employee_phone_number VARCHAR(15) UNIQUE NOT NULL,
     employee_email VARCHAR(100) UNIQUE NULL,
     employee_password VARCHAR(255) NOT NULL,
 
@@ -15,6 +15,8 @@ CREATE TABLE employees (
     employee_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     employee_deleted_at TIMESTAMP NULL
 );
+
+ALTER TABLE employees AUTO_INCREMENT = 1001;
 
 CREATE TABLE clients (
     client_id INT AUTO_INCREMENT PRIMARY KEY,

@@ -13,7 +13,7 @@ class EmployeeModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'employee_number',
+        'employee_phone_number',
         'employee_first_name',
         'employee_last_name',
         'employee_email',
@@ -36,7 +36,7 @@ class EmployeeModel extends Model
     // Validation
     protected $validationRules      = [
         'employee_id'           => 'permit_empty|numeric',
-        'employee_number'       => 'required|numeric|max_length[15]|is_unique[employees.employee_number]',
+        'employee_phone_number'       => 'required|numeric|max_length[15]|is_unique[employees.employee_phone_number]',
         'employee_email'        => 'required|valid_email|max_length[100]|is_unique[employees.employee_email]',
         'employee_password'     => 'required|string|max_length[255]',
         'employee_first_name'   => 'required|string|max_length[50]',
@@ -47,7 +47,7 @@ class EmployeeModel extends Model
         'employee_id'           => [
             'numeric'       => 'The employee ID must be a number.',
         ],
-        'employee_number'       => [
+        'employee_phone_number'       => [
             'required'      => 'The employee number field is required.',
             'numeric'       => 'The employee number must be a number.',
             'max_length'    => 'The employee number must not exceed 15 characters.',
