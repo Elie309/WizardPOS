@@ -25,6 +25,13 @@ class AuthFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
+        $currentUri = strtolower(uri_string());
+
+        if (!(str_contains($currentUri, "login") || str_contains($currentUri, "unauthorized") 
+        || str_contains($currentUri, "logout")) && !session()->get('isLoggedIn')) {
+            
+            return redirect()->to('/api/auth/unauthorized');
+        }
         
     }
 
