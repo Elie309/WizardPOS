@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Settings;
 
 use CodeIgniter\Model;
 
@@ -9,7 +9,7 @@ class EmployeeModel extends Model
     protected $table            = 'employees';
     protected $primaryKey       = 'employee_id';
     protected $useAutoIncrement = true;
-    protected $returnType       = \App\Entities\EmployeeEntity::class;
+    protected $returnType       = \App\Entities\Settings\EmployeeEntity::class;
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [

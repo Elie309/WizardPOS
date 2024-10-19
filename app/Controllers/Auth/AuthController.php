@@ -3,8 +3,8 @@
 namespace App\Controllers\Auth;
 
 use App\Controllers\BaseController;
-use App\Entities\EmployeeEntity;
-use App\Models\EmployeeModel;
+use App\Entities\Settings\EmployeeEntity;
+use App\Models\Settings\EmployeeModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class AuthController extends BaseController

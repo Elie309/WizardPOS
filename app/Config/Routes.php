@@ -10,7 +10,7 @@ use CodeIgniter\Router\RouteCollection;
 
 $routes->group('api', function ($routes) {
 
-    $routes->get('/', 'Home::index');
+    $routes->get('/', 'MainController::index');
 
     //Auth
     $routes->group('auth', function ($routes) {
