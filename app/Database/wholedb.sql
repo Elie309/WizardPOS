@@ -10,7 +10,8 @@ CREATE TABLE employees (
 
     
     employee_role ENUM('admin', 'manager', 'user') DEFAULT 'user',
-    
+    employee_is_active BOOLEAN DEFAULT 1,
+
     employee_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     employee_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     employee_deleted_at TIMESTAMP NULL
@@ -24,7 +25,7 @@ CREATE TABLE clients (
     client_first_name VARCHAR(50) NOT NULL,
     client_last_name VARCHAR(50) NOT NULL,
 
-    client_number VARCHAR(15) UNIQUE NOT NULL,
+    client_phone_number VARCHAR(15) UNIQUE NOT NULL,
 
     client_email VARCHAR(100),
     client_address TEXT,
@@ -32,37 +33,47 @@ CREATE TABLE clients (
     client_is_active BOOLEAN DEFAULT 1,
 
     client_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    client_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    client_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    client_deleted_at TIMESTAMP NULL
+
 );
 
 CREATE TABLE categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
 
-    category_name VARCHAR(50) NOT NULL,
+    category_name VARCHAR(50) UNIQUE NOT NULL,
     category_description TEXT,
     category_image VARCHAR(255) NULL,
 
     category_is_active BOOLEAN DEFAULT 1,
 
     category_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    category_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    category_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    category_deleted_at TIMESTAMP NULL
 );
 
 
 CREATE TABLE products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
-    
+    product_sku VARCHAR(50) UNIQUE NOT NULL,
+    product_slug VARCHAR(100) UNIQUE NOT NULL,
+
     product_name VARCHAR(100) NOT NULL,
     product_description TEXT,
+
     product_price DECIMAL(10, 2) NOT NULL,
 
     product_category_id INT,
+
+    product_production_date DATE NULL,
+    product_expiry_date DATE NULL,
 
     product_image VARCHAR(255) NULL,
     product_is_active BOOLEAN DEFAULT 1,
 
     product_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     product_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    product_deleted_at TIMESTAMP NULL,
 
     FOREIGN KEY (product_category_id) REFERENCES categories(category_id) ON DELETE SET NULL
 );
