@@ -18,6 +18,8 @@ class EmployeeModel extends Model
         'employee_last_name',
         'employee_email',
         'employee_role',
+        'employee_is_active',
+        'employee_password',
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -42,6 +44,7 @@ class EmployeeModel extends Model
         'employee_first_name'   => 'required|string|max_length[50]',
         'employee_last_name'    => 'required|string|max_length[50]',
         'employee_role'         => 'required|string|in_list[admin,manager,user]',
+        'employee_is_active'    => 'permit_empty|boolean',
     ];
     protected $validationMessages   = [
         'employee_id'           => [
@@ -78,6 +81,9 @@ class EmployeeModel extends Model
             'required'      => 'The employee role field is required.',
             'string'        => 'The employee role must be a string.',
             'in_list'       => 'The employee role must be either admin, manager, or user.',
+        ],
+        'employee_is_active'    => [
+            'boolean'       => 'The employee status must be a boolean.',
         ],
 
     ];

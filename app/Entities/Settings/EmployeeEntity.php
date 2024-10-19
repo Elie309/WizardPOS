@@ -14,6 +14,7 @@ class EmployeeEntity extends Entity
         'first_name'   => 'employee_first_name',
         'last_name'    => 'employee_last_name',
         'role'         => 'employee_role',
+        'is_active'    => 'employee_is_active',
 
     ];
     protected $dates   = ['employee_created_at', 'employee_updated_at', 'employee_deleted_at'];
@@ -25,6 +26,7 @@ class EmployeeEntity extends Entity
         'employee_first_name'   => 'string',
         'employee_last_name'    => 'string',
         'employee_role'         => 'string',
+        'employee_is_active'    => 'boolean',
     ];
 
 
