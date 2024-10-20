@@ -55,6 +55,7 @@ class Filters extends BaseFilters
             'forcehttps', // Force Global Secure Requests
             'pagecache',  // Web Page Caching
             'auth',
+            'cors'
             // 'csrf',       // CSRF Protection
                        
         ],
@@ -62,6 +63,7 @@ class Filters extends BaseFilters
             'pagecache',   // Web Page Caching
             'performance', // Performance Metrics
             'toolbar',     // Debug Toolbar
+            'cors'
         ],
     ];
 
