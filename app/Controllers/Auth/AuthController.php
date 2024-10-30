@@ -43,6 +43,9 @@ class AuthController extends BaseController
                 return $this->response
                     ->setJSON([
                         'message' => 'Employee logged in',
+                        'role' => $employee->employee_role,
+                        'email' => $employee->employee_email,
+                        'name' => $employee->employee_first_name . ' ' . $employee->employee_last_name,
                     ])
                     ->setStatusCode(ResponseInterface::HTTP_OK);
             } else {
