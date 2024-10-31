@@ -46,6 +46,7 @@ class AuthController extends BaseController
                         'role' => $employee->employee_role,
                         'email' => $employee->employee_email,
                         'name' => $employee->employee_first_name . ' ' . $employee->employee_last_name,
+                        'id' => $employee->employee_id,
                     ])
                     ->setStatusCode(ResponseInterface::HTTP_OK);
             } else {
