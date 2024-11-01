@@ -20,6 +20,7 @@ class CategoryModel extends Model
         'category_description',
         'category_image',
         'category_is_active',
+        'category_show_in_menu',
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -42,6 +43,7 @@ class CategoryModel extends Model
         'category_description' => 'permit_empty|string',
         'category_image' => 'permit_empty|string|max_length[255]',
         'category_is_active' => 'required|boolean',
+        'category_show_in_menu' => 'permit_empty|boolean',
     ];
     protected $validationMessages   = [
         'category_name' => [
@@ -60,6 +62,9 @@ class CategoryModel extends Model
         ],
         'category_description' => [
             'string' => 'Category description should be a string',
+        ],
+        'category_show_in_menu' => [
+            'boolean' => 'Category show in menu should be a boolean',
         ],
 
     ];

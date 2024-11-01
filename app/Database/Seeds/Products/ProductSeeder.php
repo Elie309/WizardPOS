@@ -6,6 +6,8 @@ use CodeIgniter\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
+
+    
     public function run()
     {
         $categories = $this->db->table('categories')->get()->getResult();
@@ -23,6 +25,7 @@ class ProductSeeder extends Seeder
                 'product_category_id' => $randomCategory,
                 'product_production_date' => date('Y-m-d', strtotime("-$i days")),
                 'product_expiry_date' => date('Y-m-d', strtotime("+$i days")),
+                'product_show_in_menu' => random_int(0, 1),
                 'product_image' => "https://picsum.photos/seed/picsum/640/480",
                 'product_is_active' => 1,
             ];

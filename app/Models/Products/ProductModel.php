@@ -19,6 +19,7 @@ class ProductModel extends Model
         'product_description',
         'product_price',
         'product_category_id',
+        'product_show_in_menu',
         'product_production_date',
         'product_expiry_date',
         'product_image',
@@ -50,7 +51,8 @@ class ProductModel extends Model
         'product_production_date' => 'valid_date',
         'product_expiry_date' => 'valid_date',
         'product_image' => 'valid_url',
-        'product_is_active' => 'boolean',
+        'product_is_active' => 'permit_empty|boolean',
+        'product_show_in_menu' => 'permit_empty|boolean',
     ];
     protected $validationMessages   = [
         'product_sku' => [
@@ -92,6 +94,9 @@ class ProductModel extends Model
         ],
         'product_is_active' => [
             'boolean' => 'Product Is Active must be a boolean',
+        ],
+        'product_show_in_menu' => [
+            'boolean' => 'Product Show In Menu must be a boolean',
         ],
     ];
     protected $skipValidation       = false;

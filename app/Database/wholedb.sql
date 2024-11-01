@@ -46,6 +46,7 @@ CREATE TABLE categories (
     category_image VARCHAR(255) NULL,
 
     category_is_active BOOLEAN DEFAULT 1,
+    category_show_in_menu BOOLEAN DEFAULT 1,
 
     category_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     category_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -64,6 +65,7 @@ CREATE TABLE products (
     product_price DECIMAL(10, 2) NOT NULL,
 
     product_category_id INT,
+    product_show_in_menu BOOLEAN DEFAULT 1,
 
     product_production_date DATE NULL,
     product_expiry_date DATE NULL,
