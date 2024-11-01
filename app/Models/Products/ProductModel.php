@@ -43,13 +43,13 @@ class ProductModel extends Model
     // Validation
     protected $validationRules      = [
         'product_sku' => 'required|alpha_numeric|max_length[50]|is_unique[products.product_sku]',
-        'product_slug' => 'required|alpha_numeric|max_length[100]|is_unique[products.product_slug]',
+        'product_slug' => 'required|alpha_dash|max_length[100]|is_unique[products.product_slug]',
         'product_name' => 'required|alpha_numeric_space|max_length[100]',
-        'product_description' => 'alpha_numeric_space',
+        'product_description' => 'permit_empty|string',
         'product_price' => 'required|decimal',
         'product_category_id' => 'required|integer',
-        'product_production_date' => 'valid_date',
-        'product_expiry_date' => 'valid_date',
+        'product_production_date' => 'permit_empty|valid_date',
+        'product_expiry_date' => 'permit_empty|valid_date',
         'product_image' => 'valid_url',
         'product_is_active' => 'permit_empty|boolean',
         'product_show_in_menu' => 'permit_empty|boolean',
@@ -63,7 +63,7 @@ class ProductModel extends Model
         ],
         'product_slug' => [
             'required' => 'Product Slug is required',
-            'alpha_numeric' => 'Product Slug must be alphanumeric',
+            'alpha_dash' => 'Product Slug must be alphanumeric with dashes, underscores and no spaces',
             'max_length' => 'Product Slug must not exceed 100 characters',
             'is_unique' => 'Product Slug must be unique',
         ],
@@ -73,7 +73,7 @@ class ProductModel extends Model
             'max_length' => 'Product Name must not exceed 100 characters',
         ],
         'product_description' => [
-            'alpha_numeric_space' => 'Product Description must be alphanumeric with spaces',
+            'string' => 'Product Description must be a string',
         ],
         'product_price' => [
             'required' => 'Product Price is required',
