@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Entities\Settings\EmployeeEntity;
 use App\Models\Settings\EmployeeModel;
 use CodeIgniter\HTTP\ResponseInterface;
+use Firebase\JWT\JWT;
 
 class AuthController extends BaseController
 {
@@ -15,8 +16,9 @@ class AuthController extends BaseController
         $employeeEntity->fill($this->request->getPost());
 
 
-        if(!($employeeEntity->employee_email || $employeeEntity->employee_phone_number) || !$employeeEntity->employee_password
-         ) {
+        if (
+            !($employeeEntity->employee_email || $employeeEntity->employee_phone_number) || !$employeeEntity->employee_password
+        ) {
             return $this->response
                 ->setJSON([
                     'message' => 'Email or phone number and password are required',
@@ -28,7 +30,7 @@ class AuthController extends BaseController
         $employee = null;
 
 
-        if($employeeEntity->employee_email) {
+        if ($employeeEntity->employee_email) {
             $employee = $employeeModel->where('employee_email', $employeeEntity->employee_email)->first();
         } else {
             $employee = $employeeModel->where('employee_phone_number', $employeeEntity->employee_phone_number)->first();
@@ -36,21 +38,31 @@ class AuthController extends BaseController
 
         if ($employee) {
             if (password_verify($employeeEntity->employee_password, $employee->employee_password)) {
-                $this->session->set('email', $employee->employee_email);
-                $this->session->set('role', $employee->employee_role);
-                $this->session->set('isLoggedIn', true);
+
+                $key = getenv('JWT_SECRET');
+                $iat = time();
+                $exp = $iat + 3600;
+
+                $payload = array(
+                    "iss" => "user_wizardpos", 
+                    "aud" => "user_wizardpos", 
+                    "sub" => "auth", 
+                    "iat" => $iat, 
+                    "exp" => $exp, 
+                    "email" => $employee->employee_email,
+                    'role' => $employee->employee_role,
+                );
+
+                $token = JWT::encode($payload, $key, 'HS256');
 
                 return $this->response
                     ->setJSON([
                         'message' => 'Employee logged in',
-                        'role' => $employee->employee_role,
-                        'email' => $employee->employee_email,
-                        'name' => $employee->employee_first_name . ' ' . $employee->employee_last_name,
-                        'id' => $employee->employee_id,
+                        'token' => $token,
                     ])
                     ->setStatusCode(ResponseInterface::HTTP_OK);
             } else {
-                
+
                 return $this->response
                     ->setJSON([
                         'message' => 'Wrong credentials',
@@ -70,14 +82,15 @@ class AuthController extends BaseController
     public function logout()
     {
 
-        $this->session->destroy();
+        //Destroy the token
+        // TODO: Implement token blacklisting
 
         return $this->response
-        ->setContentType('text/json')
-        ->setJSON([
-            'message' => 'Employee logged out',
-        ])
-        ->setStatusCode(ResponseInterface::HTTP_OK);
+            ->setContentType('text/json')
+            ->setJSON([
+                'message' => 'Employee logged out',
+            ])
+            ->setStatusCode(ResponseInterface::HTTP_OK);
     }
 
     public function unauthorized()

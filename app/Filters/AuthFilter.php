@@ -5,6 +5,9 @@ namespace App\Filters;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use Exception;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class AuthFilter implements FilterInterface
 {
@@ -25,14 +28,50 @@ class AuthFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
+        $key = getenv('JWT_SECRET');
+        $header = $request->header("Authorization");
+        $token = null;
+
         $currentUri = strtolower(uri_string());
 
-        if (!(str_contains($currentUri, "login") || str_contains($currentUri, "unauthorized") 
-        || str_contains($currentUri, "logout")) && !session()->get('isLoggedIn')) {
-            
-            return redirect()->to('/api/auth/unauthorized');
+        if (!(str_contains($currentUri, "login") || str_contains($currentUri, "unauthorized")
+            || str_contains($currentUri, "logout"))) {
+
+            // extract the token from the header
+            if (!empty($header)) {
+                if (preg_match('/Bearer\s(\S+)/', $header, $matches)) {
+                    $token = $matches[1];
+                }
+            }
+
+            if (is_null($token) || empty($token)) {
+                return redirect()->to('/api/auth/unauthorized');
+            }
+
+            try {
+                // $decoded = JWT::decode($token, $key, array("HS256"));
+                $decoded = JWT::decode($token, new Key($key, 'HS256'));
+
+                // check if the token is expired
+                if ($decoded->exp < time()) {
+                    return redirect()->to('/api/auth/unauthorized');
+                }
+
+                // check if the token is valid
+                if ($decoded->iss !== "user_wizardpos" || $decoded->aud !== "user_wizardpos" || $decoded->sub !== "auth") {
+                    return redirect()->to('/api/auth/unauthorized');
+                }
+                // check if the token is valid
+                if (!isset($decoded->email) || !isset($decoded->role)) {
+                    return redirect()->to('/api/auth/unauthorized');
+                }
+                // set the email and role in the request
+                $request->email = $decoded->email;
+                $request->role = $decoded->role;
+            } catch (Exception $ex) {
+                return redirect()->to('/api/auth/unauthorized');
+            }
         }
-        
     }
 
     /**
