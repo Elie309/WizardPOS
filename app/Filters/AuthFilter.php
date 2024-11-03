@@ -31,6 +31,7 @@ class AuthFilter implements FilterInterface
     {
 
         $currentUri = strtolower(uri_string());
+        $response = service('response');
 
         if (!(str_contains($currentUri, "login") || str_contains($currentUri, "unauthorized")
             || str_contains($currentUri, "logout"))) {
@@ -40,26 +41,36 @@ class AuthFilter implements FilterInterface
                 $token = JWTHelper::removeBearer($request->header('Authorization'));
 
                 if (is_null($token) || empty($token)) {
-                    return redirect()->to('/api/auth/unauthorized');
+                    return $response->setJSON([
+                        'message' => 'Unauthorized',
+                    ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
                 }
 
                 $decoded = JWTHelper::decode($token);
 
                 // check if the token is expired
                 if ($decoded->exp < time()) {
-                    return redirect()->to('/api/auth/unauthorized');
+                    return $response->setJSON([
+                        'message' => 'Unauthorized',
+                    ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
                 }
 
                 // check if the token is valid
                 if ($decoded->iss !== "user_wizardpos" || $decoded->aud !== "user_wizardpos" || $decoded->sub !== "auth") {
-                    return redirect()->to('/api/auth/unauthorized');
+                    return $response->setJSON([
+                        'message' => 'Unauthorized',
+                    ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
                 }
                 // check if the token is valid
                 if (!isset($decoded->email) || !isset($decoded->role)) {
-                    return redirect()->to('/api/auth/unauthorized');
+                    return $response->setJSON([
+                        'message' => 'Unauthorized',
+                    ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
                 }
             } catch (Exception $ex) {
-                return redirect()->to('/api/auth/unauthorized');
+                return $response->setJSON([
+                    'message' => 'Unauthorized',
+                ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
             }
         }
     }
