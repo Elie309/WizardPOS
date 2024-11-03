@@ -22,7 +22,7 @@ $routes->group('api', function ($routes) {
 
     //Products
     $routes->group('products', function ($routes) {
-        $routes->get('getMenuProducts', 'Products\ProductsController::getMenuProducts');
+        $routes->get('menu', 'Products\ProductsController::getMenuProducts');
         $routes->get('search', 'Products\ProductsController::index');
         $routes->get('sku/(:alphanum)', 'Products\ProductsController::getWithSKU/$1');
 
