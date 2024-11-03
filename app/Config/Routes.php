@@ -16,6 +16,7 @@ $routes->group('api', function ($routes) {
     $routes->group('auth', function ($routes) {
         $routes->post('login', 'Auth\AuthController::login');
         $routes->post('logout', 'Auth\AuthController::logout');
+        $routes->get('getAuthenticatedUser', 'Auth\AuthController::getAuthenticatedUser');
         $routes->get('unauthorized', 'Auth\AuthController::unauthorized');
     });
 

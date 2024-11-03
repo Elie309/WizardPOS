@@ -2,6 +2,7 @@
 
 namespace App\Filters;
 
+use App\Helpers\JWTHelper;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -28,29 +29,21 @@ class AuthFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        $key = getenv('JWT_SECRET');
-        $header = $request->header("Authorization");
-        $token = null;
 
         $currentUri = strtolower(uri_string());
 
         if (!(str_contains($currentUri, "login") || str_contains($currentUri, "unauthorized")
             || str_contains($currentUri, "logout"))) {
 
-            // extract the token from the header
-            if (!empty($header)) {
-                if (preg_match('/Bearer\s(\S+)/', $header, $matches)) {
-                    $token = $matches[1];
-                }
-            }
-
-            if (is_null($token) || empty($token)) {
-                return redirect()->to('/api/auth/unauthorized');
-            }
-
             try {
-                // $decoded = JWT::decode($token, $key, array("HS256"));
-                $decoded = JWT::decode($token, new Key($key, 'HS256'));
+
+                $token = JWTHelper::removeBearer($request->header('Authorization'));
+
+                if (is_null($token) || empty($token)) {
+                    return redirect()->to('/api/auth/unauthorized');
+                }
+
+                $decoded = JWTHelper::decode($token);
 
                 // check if the token is expired
                 if ($decoded->exp < time()) {
@@ -65,9 +58,6 @@ class AuthFilter implements FilterInterface
                 if (!isset($decoded->email) || !isset($decoded->role)) {
                     return redirect()->to('/api/auth/unauthorized');
                 }
-                // set the email and role in the request
-                $request->email = $decoded->email;
-                $request->role = $decoded->role;
             } catch (Exception $ex) {
                 return redirect()->to('/api/auth/unauthorized');
             }

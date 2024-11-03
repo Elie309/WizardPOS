@@ -4,9 +4,11 @@ namespace App\Controllers\Auth;
 
 use App\Controllers\BaseController;
 use App\Entities\Settings\EmployeeEntity;
+use App\Helpers\JWTHelper;
 use App\Models\Settings\EmployeeModel;
+
 use CodeIgniter\HTTP\ResponseInterface;
-use Firebase\JWT\JWT;
+
 
 class AuthController extends BaseController
 {
@@ -39,26 +41,21 @@ class AuthController extends BaseController
         if ($employee) {
             if (password_verify($employeeEntity->employee_password, $employee->employee_password)) {
 
-                $key = getenv('JWT_SECRET');
-                $iat = time();
-                $exp = $iat + 3600;
-
-                $payload = array(
-                    "iss" => "user_wizardpos", 
-                    "aud" => "user_wizardpos", 
-                    "sub" => "auth", 
-                    "iat" => $iat, 
-                    "exp" => $exp, 
-                    "email" => $employee->employee_email,
-                    'role' => $employee->employee_role,
+                $token = JWTHelper::encodeUser(
+                    $employee->employee_email,
+                    $employee->employee_role,
+                    $employee->employee_first_name . ' ' . $employee->employee_last_name
                 );
-
-                $token = JWT::encode($payload, $key, 'HS256');
 
                 return $this->response
                     ->setJSON([
                         'message' => 'Employee logged in',
                         'token' => $token,
+                        'user' => [
+                            'name' => $employee->employee_first_name . ' ' . $employee->employee_last_name,
+                            'email' => $employee->employee_email,
+                            'role' => $employee->employee_role,
+                        ]
                     ])
                     ->setStatusCode(ResponseInterface::HTTP_OK);
             } else {
@@ -89,6 +86,21 @@ class AuthController extends BaseController
             ->setContentType('text/json')
             ->setJSON([
                 'message' => 'Employee logged out',
+            ])
+            ->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
+    public function getAuthenticatedUser()
+    {
+        
+        return $this->response
+            ->setJSON([
+                'message' => 'Employee logged in',
+                'user' => [
+                    'name' => $this->user->name,
+                    'email' => $this->user->email,
+                    'role' => $this->user->role,
+                ]
             ])
             ->setStatusCode(ResponseInterface::HTTP_OK);
     }
