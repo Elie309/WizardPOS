@@ -34,7 +34,7 @@ class AuthFilter implements FilterInterface
         $response = service('response');
 
         if (!(str_contains($currentUri, "login") || str_contains($currentUri, "unauthorized")
-            || str_contains($currentUri, "logout"))) {
+            || str_contains($currentUri, "logout")) || $request->getMethod() !== 'OPTIONS') {
 
             try {
 
