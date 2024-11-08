@@ -23,8 +23,9 @@ $routes->group('api', function ($routes) {
     //Products
     $routes->group('products', function ($routes) {
         $routes->get('menu', 'Products\ProductsController::getMenuProducts');
-        $routes->get('search', 'Products\ProductsController::index');
+        $routes->get('search', 'Products\ProductsController::search');
         $routes->get('sku/(:alphanum)', 'Products\ProductsController::getWithSKU/$1');
+        $routes->get('/', 'Products\ProductsController::index');
 
         $routes->post('/', 'Products\ProductsController::create');
         $routes->post('(:alphanum)', 'Products\ProductsController::update/$1');
