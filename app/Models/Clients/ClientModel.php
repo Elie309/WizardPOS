@@ -5,22 +5,6 @@ namespace App\Models\Clients;
 use CodeIgniter\Model;
 
 
-// client_id INT AUTO_INCREMENT PRIMARY KEY,
-    
-// client_first_name VARCHAR(50) NOT NULL,
-// client_last_name VARCHAR(50) NOT NULL,
-
-// client_phone_number VARCHAR(15) UNIQUE NOT NULL,
-
-// client_email VARCHAR(100),
-// client_address TEXT,
-
-// client_is_active BOOLEAN DEFAULT 1,
-
-// client_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-// client_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-// client_deleted_at TIMESTAMP NULL
-
 class ClientModel extends Model
 {
     protected $table            = 'clients';

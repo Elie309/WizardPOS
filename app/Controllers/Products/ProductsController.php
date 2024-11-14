@@ -146,8 +146,6 @@ class ProductsController extends BaseController
 
     public function create()
     {
-        //FOR CREATE PRODUCT
-        //TODO: CHeck if user is admin or manager in my\
         $role = $this->user->role;
 
         if ($role != 'admin' && $role != 'manager') {

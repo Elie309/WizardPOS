@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Products;
 
 use CodeIgniter\Model;
 
@@ -13,7 +13,7 @@ class CategoryModel extends Model
     protected $primaryKey       = 'category_id';
     protected $useAutoIncrement = true;
     protected $returnType       = \App\Entities\Products\CategoryEntity::class;
-    protected $useSoftDeletes   = true;
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'category_name',

@@ -50,7 +50,6 @@ CREATE TABLE categories (
 
     category_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     category_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    category_deleted_at TIMESTAMP NULL
 );
 
 
@@ -64,7 +63,7 @@ CREATE TABLE products (
 
     product_price DECIMAL(10, 2) NOT NULL,
 
-    product_category_id INT,
+    product_category_id INT NOT NULL,
     product_show_in_menu BOOLEAN DEFAULT 1,
 
     product_production_date DATE NULL,
@@ -77,7 +76,7 @@ CREATE TABLE products (
     product_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     product_deleted_at TIMESTAMP NULL,
 
-    FOREIGN KEY (product_category_id) REFERENCES categories(category_id) ON DELETE SET NULL
+    FOREIGN KEY (product_category_id) REFERENCES categories(category_id)
 );
 
 

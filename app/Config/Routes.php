@@ -36,12 +36,12 @@ $routes->group('api', function ($routes) {
 
     //Categories
     $routes->group('categories', function ($routes) {
-        $routes->get('/', 'Categories\CategoriesController::index');
-        $routes->get('(:alphanum)', 'Categories\CategoriesController::show/$1');
+        $routes->get('/', 'Products\CategoriesController::index');
+        $routes->get('(:alphanum)', 'Products\CategoriesController::show/$1');
 
         //Need authorization
-        $routes->post('/', 'Categories\CategoriesController::create');
-        $routes->post('(:alphanum)', 'Categories\CategoriesController::update/$1');
-        $routes->delete('(:alphanum)', 'Categories\CategoriesController::delete/$1');
+        $routes->post('/', 'Products\CategoriesController::create');
+        $routes->post('(:alphanum)', 'Products\CategoriesController::update/$1');
+        $routes->delete('(:alphanum)', 'Products\CategoriesController::delete/$1');
     });
 });
