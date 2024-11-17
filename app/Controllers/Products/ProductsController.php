@@ -23,8 +23,7 @@ class ProductsController extends BaseController
         $page = $page ? intval($page) : 1;
 
         $productsQuery = $productModel->select('products.*, categories.category_name')
-            ->join('categories', 'categories.category_id = products.product_category_id')
-            ->where('product_is_active', 1);
+            ->join('categories', 'categories.category_id = products.product_category_id');
 
         $search = esc($this->request->getGet('search'));
 
@@ -34,6 +33,8 @@ class ProductsController extends BaseController
                 ->orLike('category_name', $search)
                 ->orLike('product_sku', $search);
         }
+
+
 
         $products = $productsQuery->paginate($perPage, 'default', $page);
 
@@ -66,8 +67,7 @@ class ProductsController extends BaseController
         $productModel = new ProductModel();
 
         $products = $productModel->select('products.*, categories.category_name')
-            ->join('categories', 'categories.category_id = products.product_category_id')
-            ->where('product_is_active', 1);
+            ->join('categories', 'categories.category_id = products.product_category_id');
 
         //getParam
         $search = esc($this->request->getGet('search'));
