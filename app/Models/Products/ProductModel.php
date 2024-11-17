@@ -50,7 +50,7 @@ class ProductModel extends Model
         'product_category_id' => 'required|integer',
         'product_production_date' => 'permit_empty|valid_date',
         'product_expiry_date' => 'permit_empty|valid_date',
-        'product_image' => 'valid_url',
+        'product_image' => 'permit_empty|valid_url',
         'product_is_active' => 'permit_empty|boolean',
         'product_show_in_menu' => 'permit_empty|boolean',
     ];
