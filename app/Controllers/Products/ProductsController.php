@@ -22,12 +22,22 @@ class ProductsController extends BaseController
         $page = esc($this->request->getVar('page')) ?? 1;
         $page = $page ? intval($page) : 1;
 
-        $products = $productModel->select('products.*, categories.category_name')
+        $productsQuery = $productModel->select('products.*, categories.category_name')
             ->join('categories', 'categories.category_id = products.product_category_id')
-            ->where('product_is_active', 1)
-            ->paginate($perPage, 'default', $page);
+            ->where('product_is_active', 1);
 
-        if (!$products || count($products) == 0) {
+        $search = esc($this->request->getGet('search'));
+
+        if ($search) {
+            $productsQuery
+                ->like('product_name', $search)
+                ->orLike('category_name', $search)
+                ->orLike('product_sku', $search);
+        }
+
+        $products = $productsQuery->paginate($perPage, 'default', $page);
+
+        if (empty($products)) {
             return $this->response
                 ->setJSON([
                     'message' => 'No products found',
@@ -42,11 +52,14 @@ class ProductsController extends BaseController
                 'currentPage' => $productModel->pager->getCurrentPage(),
                 'pageCount' => $productModel->pager->getPageCount(),
                 'total' => $productModel->pager->getTotal(),
-                'products' => $products, 
+                'products' => $products,
 
             ])
             ->setStatusCode(ResponseInterface::HTTP_OK);
     }
+
+
+
 
     public function search()
     {
