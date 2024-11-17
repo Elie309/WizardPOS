@@ -239,6 +239,20 @@ class ProductsController extends BaseController
 
             $newProduct = $productEntity->fill($this->request->getPost());
 
+
+            //Check if sku and slug hasn't changed
+            if ($oldProduct->product_sku === $newProduct->product_sku) {
+                //Unset sku
+                unset($newProduct->product_sku);
+            }
+
+            if($oldProduct->product_slug === $newProduct->product_slug){
+                //Unset slug
+                unset($newProduct->product_slug);
+            }
+
+
+
             if ($productModel->update($oldProduct->product_id, $newProduct)) {
                 return $this->response
                     ->setJSON([
