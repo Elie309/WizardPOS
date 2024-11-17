@@ -11,23 +11,21 @@ use CodeIgniter\HTTP\ResponseInterface;
 class ProductsController extends BaseController
 {
 
-    public function index(){
+    public function index()
+    {
         $productModel = new ProductModel();
 
-        //Set limit
-        $perPage = esc($this->request->getVar('perPage')) || 10;
+        // Set limit
+        $perPage = esc($this->request->getVar('perPage')) ?? 10;
         $perPage = $perPage ? intval($perPage) : 10;
 
-        $page = esc($this->request->getVar('page')) || 1;
+        $page = esc($this->request->getVar('page')) ?? 1;
         $page = $page ? intval($page) : 1;
-
 
         $products = $productModel->select('products.*, categories.category_name')
             ->join('categories', 'categories.category_id = products.product_category_id')
             ->where('product_is_active', 1)
             ->paginate($perPage, 'default', $page);
-
-
 
         if (!$products || count($products) == 0) {
             return $this->response
@@ -37,11 +35,16 @@ class ProductsController extends BaseController
                 ->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
-       log_message('info', 'Query: ' .  $productModel->getLastQuery());
         return $this->response
-            ->setJSON(
-                $products,
-            )
+            ->setJSON([
+                'perPage' => $perPage,
+                'page' => $page,
+                'currentPage' => $productModel->pager->getCurrentPage(),
+                'pageCount' => $productModel->pager->getPageCount(),
+                'total' => $productModel->pager->getTotal(),
+                'products' => $products, 
+
+            ])
             ->setStatusCode(ResponseInterface::HTTP_OK);
     }
 
@@ -246,7 +249,7 @@ class ProductsController extends BaseController
                 unset($newProduct->product_sku);
             }
 
-            if($oldProduct->product_slug === $newProduct->product_slug){
+            if ($oldProduct->product_slug === $newProduct->product_slug) {
                 //Unset slug
                 unset($newProduct->product_slug);
             }
