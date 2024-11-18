@@ -23,6 +23,7 @@ class CategoriesController extends BaseController
     {
         $categoryModel = new CategoryModel();
 
+
         $category = $categoryModel->where('category_name', $category_name)->first();
 
         if ($category === null) {
@@ -61,7 +62,7 @@ class CategoriesController extends BaseController
         return $this->response->setJSON(['message' => 'Category not created'])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
     }
 
-    public function update($id)
+    public function update($category_name)
     {
         $categoryModel = new CategoryModel();
         $categoriesEntity = new CategoryEntity();
@@ -76,13 +77,19 @@ class CategoriesController extends BaseController
                 ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
         }
 
-        if (!$categoryModel->find($id)) {
+        $category = $categoryModel->where('category_name', $category_name)->first();
+
+        if (!$category) {
             return $this->response->setJSON(['message' => 'Category not found'])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
         $categoriesEntity->fill($this->request->getPost());
 
-        if ($categoryModel->update($id, $categoriesEntity)) {
+        if($category->category_name === $categoriesEntity->category_name){
+            unset($categoriesEntity->category_name);
+        }
+
+        if ($categoryModel->update($category->category_id, $categoriesEntity)) {
             return $this->response->setJSON([
                 'message' => 'Category updated',
                 'category' => $categoriesEntity
