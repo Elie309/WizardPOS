@@ -44,4 +44,9 @@ $routes->group('api', function ($routes) {
         $routes->post('(:segment)', 'Products\CategoriesController::update/$1');
         $routes->delete('(:segment)', 'Products\CategoriesController::delete/$1');
     });
+
+    //Uploads image
+    $routes->group('uploads', function ($routes) {
+        $routes->post('image', 'Uploads\UploadsController::upload');
+    });
 });
