@@ -59,7 +59,10 @@ class CategoriesController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_CREATED);
         }
 
-        return $this->response->setJSON(['message' => 'Category not created'])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+        return $this->response->setJSON([
+            'message' => 'Category not saved',
+            'errors' => $categoryModel->errors(),
+        ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
     }
 
     public function update($category_name)
@@ -85,7 +88,7 @@ class CategoriesController extends BaseController
 
         $categoriesEntity->fill($this->request->getPost());
 
-        if($category->category_name === $categoriesEntity->category_name){
+        if ($category->category_name === $categoriesEntity->category_name) {
             unset($categoriesEntity->category_name);
         }
 
@@ -96,7 +99,10 @@ class CategoriesController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_OK);
         }
 
-        return $this->response->setJSON(['message' => 'Category not updated'])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+        return $this->response->setJSON([
+            'message' => 'Category not updated',
+            'errors' => $categoryModel->errors(),
+        ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
     }
 
     public function delete($id)
