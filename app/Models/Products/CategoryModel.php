@@ -41,7 +41,7 @@ class CategoryModel extends Model
         'category_id' => 'permit_empty|integer',
         'category_name' => 'required|string|max_length[50]|is_unique[categories.category_name]',
         'category_description' => 'permit_empty|string',
-        'category_image' => 'permit_empty|string|max_length[255]',
+        'category_image' => 'permit_empty|valid_url',
         'category_is_active' => 'required|boolean',
         'category_show_in_menu' => 'permit_empty|boolean',
     ];
@@ -50,8 +50,7 @@ class CategoryModel extends Model
             'is_unique' => 'Category name already exists',
         ],
         'category_image' => [
-            'string' => 'Category image should be a string',
-            'max_length' => 'Category image should not exceed 255 characters',
+            'valid_url' => 'Category image should be a valid URL',
         ],
         'category_is_active' => [
             'required' => 'Category status is required',
