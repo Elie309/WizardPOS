@@ -19,11 +19,11 @@ class CategoriesController extends BaseController
         return $this->response->setJSON($data)->setStatusCode(ResponseInterface::HTTP_OK);
     }
 
-    public function show($id)
+    public function show($category_name)
     {
         $categoryModel = new CategoryModel();
 
-        $category = $categoryModel->where('category_name', $id)->first();
+        $category = $categoryModel->where('category_name', $category_name)->first();
 
         if ($category === null) {
             return $this->response->setJSON(['message' => 'Category not found'])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
