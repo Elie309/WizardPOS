@@ -23,7 +23,7 @@ class CategoriesController extends BaseController
     {
         $categoryModel = new CategoryModel();
 
-        $category = $categoryModel->find($id);
+        $category = $categoryModel->where('category_name', $id)->first();
 
         if ($category === null) {
             return $this->response->setJSON(['message' => 'Category not found'])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
@@ -118,14 +118,13 @@ class CategoriesController extends BaseController
             }
 
             return $this->response->setJSON(['message' => 'Category not deleted'])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
-        }catch (DatabaseException $e) {
+        } catch (DatabaseException $e) {
             //Foreign key constraint
-            if($e->getCode() == 1451){
+            if ($e->getCode() == 1451) {
                 return $this->response->setJSON(['message' => 'Category cannot be deleted because it is being used'])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
             }
 
             return $this->response->setJSON(['message' => $e->getMessage()])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
-       
         } catch (\Exception $e) {
             return $this->response->setJSON(['message' => $e->getMessage()])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
