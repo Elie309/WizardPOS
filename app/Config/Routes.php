@@ -53,11 +53,25 @@ $routes->group('api', function ($routes) {
     // Clients
     $routes->group('clients', function ($routes) {
         $routes->get('/', 'Clients\ClientController::index');
-        $routes->get('(:alphanum)', 'Clients\ClientController::show/$1');
+        $routes->get('(:num)', 'Clients\ClientController::show/$1');
         $routes->post('/', 'Clients\ClientController::create');
-        $routes->post('(:alphanum)', 'Clients\ClientController::update/$1');
+        $routes->post('(:num)', 'Clients\ClientController::update/$1');
 
         // Need authorization
-        $routes->delete('(:alphanum)', 'Clients\ClientController::delete/$1');
+        $routes->delete('(:num)', 'Clients\ClientController::delete/$1');
+    });
+
+    //Tables
+    $routes->group('tables', function ($routes) {
+        $routes->get('/', 'Tables\TableController::index');
+        $routes->get('active', 'Tables\TableController::activeTables');
+        $routes->get('(:num)', 'Tables\TableController::show/$1');
+
+        $routes->post('/', 'Tables\TableController::create');
+        $routes->post('(:num)', 'Tables\TableController::update/$1');
+
+
+        // Need authorization
+        $routes->delete('(:num)', 'Tables\TableController::delete/$1');
     });
 });
