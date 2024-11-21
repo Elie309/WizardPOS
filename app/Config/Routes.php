@@ -49,4 +49,15 @@ $routes->group('api', function ($routes) {
     $routes->group('uploads', function ($routes) {
         $routes->post('image', 'Uploads\UploadsController::upload');
     });
+
+    // Clients
+    $routes->group('clients', function ($routes) {
+        $routes->get('/', 'Clients\ClientController::index');
+        $routes->get('(:alphanum)', 'Clients\ClientController::show/$1');
+        $routes->post('/', 'Clients\ClientController::create');
+        $routes->post('(:alphanum)', 'Clients\ClientController::update/$1');
+
+        // Need authorization
+        $routes->delete('(:alphanum)', 'Clients\ClientController::delete/$1');
+    });
 });

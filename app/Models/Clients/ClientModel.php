@@ -42,7 +42,7 @@ class ClientModel extends Model
         'client_phone_number' => 'required|string|max_length[15]|is_unique[clients.client_phone_number]',
         'client_email' => 'permit_empty|valid_email|max_length[100]',
         'client_address' => 'permit_empty|string',
-        'client_is_active' => 'required|boolean',
+        'client_is_active' => 'permit_empty|boolean',
     ];
     protected $validationMessages   = [
         'client_first_name' => [
@@ -69,7 +69,6 @@ class ClientModel extends Model
             'string' => 'The address field must contain only letters.',
         ],
         'client_is_active' => [
-            'required' => 'The is active field is required.',
             'boolean' => 'The is active field must be a boolean value.',
         ],
     ];
