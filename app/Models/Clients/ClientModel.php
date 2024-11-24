@@ -39,7 +39,7 @@ class ClientModel extends Model
     protected $validationRules      = [
         'client_first_name' => 'required|string|max_length[50]',
         'client_last_name' => 'required|string|max_length[50]',
-        'client_phone_number' => 'required|string|max_length[15]|is_unique[clients.client_phone_number]',
+        'client_phone_number' => 'required|string|max_length[255]|is_unique[clients.client_phone_number]',
         'client_email' => 'permit_empty|valid_email|max_length[100]',
         'client_address' => 'permit_empty|string',
         'client_is_active' => 'permit_empty|boolean',
@@ -58,7 +58,7 @@ class ClientModel extends Model
         'client_phone_number' => [
             'required' => 'The phone number field is required.',
             'string' => 'The phone number field must contain only letters.',
-            'max_length' => 'The phone number field cannot exceed 15 characters in length.',
+            'max_length' => 'The phone number field cannot exceed 255 characters in length.',
             'is_unique' => 'The phone number field must be unique.',
         ],
         'client_email' => [

@@ -103,12 +103,18 @@ class ClientController extends BaseController
 
         $clientEntity->fill($this->request->getPost());
 
-        if(!$clientModel->find($id)){
+        $oldClient = $clientModel->find($id);
+        if(!$oldClient){
             return $this->response->setJSON([
                 'message' => 'Client not found',
                 'errors' => $clientModel->errors(),
                 'data' => null
             ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+        }
+
+        if($oldClient->client_phone_number === $clientEntity->client_phone_number){
+            //Delete phone number from the entity
+            unset($clientEntity->client_phone_number);
         }
 
         if (!$clientModel->update($id, $clientEntity)) {

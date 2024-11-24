@@ -25,7 +25,7 @@ CREATE TABLE clients (
     client_first_name VARCHAR(50) NOT NULL,
     client_last_name VARCHAR(50) NOT NULL,
 
-    client_phone_number VARCHAR(15) UNIQUE NOT NULL,
+    client_phone_number VARCHAR(255) UNIQUE NOT NULL,
 
     client_email VARCHAR(100),
     client_address TEXT,
@@ -43,7 +43,7 @@ CREATE TABLE categories (
 
     category_name VARCHAR(50) UNIQUE NOT NULL,
     category_description TEXT,
-    category_image VARCHAR(255) NULL,
+    category_image TEXT NULL,
 
     category_is_active BOOLEAN DEFAULT 1,
     category_show_in_menu BOOLEAN DEFAULT 1,
@@ -69,7 +69,7 @@ CREATE TABLE products (
     product_production_date DATE NULL,
     product_expiry_date DATE NULL,
 
-    product_image VARCHAR(255) NULL,
+    product_image TEXT NULL,
     product_is_active BOOLEAN DEFAULT 1,
 
     product_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
