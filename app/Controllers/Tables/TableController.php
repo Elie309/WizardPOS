@@ -26,14 +26,14 @@ class TableController extends BaseController
             return $this->response->setJSON([
                 'message' => 'Table not found',
                 'errors' => $tableModel->errors(),
-                'table' => null
+                'data' => null
                 ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
         return $this->response->setJSON([
             'message' => 'Table found',
             'errors' => null,
-            'table' => $table
+            'data' => $table
             ])->setStatusCode(ResponseInterface::HTTP_OK);
     }
 
