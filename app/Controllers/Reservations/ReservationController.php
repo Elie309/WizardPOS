@@ -20,7 +20,31 @@ class ReservationController extends BaseController
 
     public function index()
     {
-        //
+
+        $reservationModel = new ReservationModel();
+
+        $date = esc($this->request->getGet('date'));
+
+        $date = date('Y-m-d', strtotime($date));
+
+
+        $reservations = $reservationModel->select('reservations.*, 
+                CONCAT(clients.client_first_name, " ",clients.client_last_name ) as client_name,
+                clients.client_phone_number,
+                CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name
+                ')
+            ->join('clients', 'clients.client_id = reservations.reservation_client_id')
+            ->join('employees', 'employees.employee_id = reservations.reservation_employee_id')
+            ->where('reservations.reservation_date', $date)
+            ->findAll();
+
+
+
+        return $this->response->setJSON([
+            'data' => $reservations,
+            'message' => 'Reservations found',
+            'errors' => null
+        ])->setStatusCode(ResponseInterface::HTTP_OK);
     }
 
     public function create()
@@ -36,7 +60,7 @@ class ReservationController extends BaseController
         $employee = $employeeModel->select('employee_id, employee_email')->where('employee_email', $this->user->email)->first();
 
 
-        if(!$employee){
+        if (!$employee) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Employee not found',
@@ -46,7 +70,7 @@ class ReservationController extends BaseController
 
         $reservationEntity->reservation_employee_id = $employee->employee_id;
 
-        if(!$reservationModel->save($reservationEntity)){
+        if (!$reservationModel->save($reservationEntity)) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Failed to create reservation',
@@ -59,7 +83,6 @@ class ReservationController extends BaseController
             'message' => 'Reservation created',
             'errors' => null
         ])->setStatusCode(ResponseInterface::HTTP_CREATED);
-
     }
 
 
@@ -71,12 +94,12 @@ class ReservationController extends BaseController
 
         $reservation = $reservationModel->find($id);
 
-        if(!$reservation){
+        if (!$reservation) {
             return $this->response->setJSON([
-                    'data' => null,
-                    'message' => 'Reservation not found',
-                    'errors' => $reservationModel->errors()
-                ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+                'data' => null,
+                'message' => 'Reservation not found',
+                'errors' => $reservationModel->errors()
+            ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
         $reservation = $reservationModel->select('reservations.*, 
@@ -94,7 +117,6 @@ class ReservationController extends BaseController
             'message' => 'Reservation found',
             'errors' => null
         ])->setStatusCode(ResponseInterface::HTTP_OK);
-
     }
 
     public function update($id)
@@ -106,7 +128,7 @@ class ReservationController extends BaseController
 
         $reservation = $reservationModel->find($id);
 
-        if(!$reservation){
+        if (!$reservation) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Reservation not found',
@@ -122,7 +144,7 @@ class ReservationController extends BaseController
         unset($reservationEntity->reservation_employee_id);
 
 
-        if(!$reservationModel->update($id, $reservationEntity)){
+        if (!$reservationModel->update($id, $reservationEntity)) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Failed to update reservation',
@@ -130,22 +152,21 @@ class ReservationController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-       
+
         return $this->response->setJSON([
             'data' => $reservationEntity,
             'message' => 'Reservation updated',
             'errors' => null
         ])->setStatusCode(ResponseInterface::HTTP_OK);
-
     }
 
     public function delete($id)
     {
-        
+
         $reservationModel = new ReservationModel();
 
 
-        if($this->user->role !== 'admin'){
+        if ($this->user->role !== 'admin') {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Unauthorized',
@@ -155,7 +176,7 @@ class ReservationController extends BaseController
 
         $reservation = $reservationModel->find($id);
 
-        if(!$reservation){
+        if (!$reservation) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Reservation not found',
@@ -163,7 +184,7 @@ class ReservationController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
-        if(!$reservationModel->delete($id)){
+        if (!$reservationModel->delete($id)) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Failed to delete reservation',
@@ -176,18 +197,16 @@ class ReservationController extends BaseController
             'message' => 'Reservation deleted',
             'errors' => null
         ])->setStatusCode(ResponseInterface::HTTP_OK);
-
     }
 
 
-    public function statuses(){
+    public function statuses()
+    {
 
         return $this->response->setJSON([
             'data' => $this->statuses,
             'message' => 'Available statuses',
             'errors' => null
         ])->setStatusCode(ResponseInterface::HTTP_OK);
-        
     }
-
 }
