@@ -31,10 +31,13 @@ class ReservationController extends BaseController
         $reservations = $reservationModel->select('reservations.*, 
                 CONCAT(clients.client_first_name, " ",clients.client_last_name ) as client_name,
                 clients.client_phone_number,
-                CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name
+                CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name,
+                restaurant_tables.table_is_active
                 ')
             ->join('clients', 'clients.client_id = reservations.reservation_client_id')
+            ->join('restaurant_tables', 'restaurant_tables.table_id = reservations.reservation_table_id')
             ->join('employees', 'employees.employee_id = reservations.reservation_employee_id')
+            ->where('restaurant_tables.table_is_active', 1)
             ->where('reservations.reservation_date', $date)
             ->findAll();
 
