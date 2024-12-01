@@ -103,13 +103,14 @@ CREATE TABLE reservations (
 
     reservation_date DATE NOT NULL,
     reservation_starting_time TIME NOT NULL,
-    reservation_ending_time TIME NULL,
+    reservation_ending_time TIME NOT NULL,
     reservation_guests INT NULL,
     reservation_status ENUM('pending', 'confirmed', 'cancelled', 'completed') DEFAULT 'pending',
 
     reservation_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     reservation_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-     
+    reservation_deleted_at TIMESTAMP NULL,
+
     FOREIGN KEY (reservation_client_id) REFERENCES clients(client_id),
     FOREIGN KEY (reservation_table_id) REFERENCES restaurant_tables(table_id),
     FOREIGN KEY (reservation_employee_id) REFERENCES employees(employee_id)

@@ -13,5 +13,6 @@ class MainSeeder extends Seeder
         $this->call('App\Database\Seeds\Products\ProductSeeder');
         $this->call('App\Database\Seeds\Clients\ClientSeeder');
         $this->call('App\Database\Seeds\Tables\TableSeeder');
+        $this->call('App\Database\Seeds\Reservations\ReservationSeeder');
     }
 }

@@ -74,4 +74,20 @@ $routes->group('api', function ($routes) {
         // Need authorization
         $routes->delete('(:num)', 'Tables\TableController::delete/$1');
     });
+
+    //Reservations
+    $routes->group('reservations', function ($routes) {
+        $routes->get('/', 'Reservations\ReservationController::index');
+        $routes->get('(:num)', 'Reservations\ReservationController::show/$1');
+
+        $routes->post('/', 'Reservations\ReservationController::create');
+        $routes->post('(:num)', 'Reservations\ReservationController::update/$1');
+
+        // Need authorization
+        $routes->delete('(:num)', 'Reservations\ReservationController::delete/$1');
+
+        //Get Statuses
+        $routes->get('statuses', 'Reservations\ReservationController::statuses');
+
+    });
 });

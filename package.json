@@ -14,7 +14,8 @@
   },
   "scripts": {
     "start": "php spark serve",
-    "database": "php spark db:create wizardpos && php spark migrate && php spark db:seed MainSeeder"
+    "database": "php spark db:create wizardpos && php spark migrate && php spark db:seed MainSeeder",
+    "seed-reservations": "php spark db:seed App\\Database\\Seeds\\Reservations\\ReservationSeeder"
   },
   "repository": {
     "type": "git",
