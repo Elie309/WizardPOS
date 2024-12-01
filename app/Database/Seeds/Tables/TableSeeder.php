@@ -13,10 +13,10 @@ class TableSeeder extends Seeder
 
         for ($i = 0; $i < 15; $i++) {
             $data = [
-                'table_name' => $faker->word,
-                'table_description' => $faker->sentence,
+                'table_name' => $faker->word(),
+                'table_description' => $faker->sentence(),
                 'table_max_capacity' => $faker->numberBetween(2, 10),
-                'table_is_active' => $faker->boolean,
+                'table_is_active' => $faker->boolean(),
             ];
 
             // Using Query Builder

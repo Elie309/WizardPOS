@@ -13,12 +13,12 @@ class ClientSeeder extends Seeder
         $data = [];
         for ($i = 0; $i < 50; $i++) {
             $data[] = [
-                'client_first_name' => $faker->firstName,
-                'client_last_name' => $faker->lastName,
-                'client_email' => $faker->email,
-                'client_phone_number' => $faker->phoneNumber,
-                'client_address' => $faker->address,
-                'client_is_active' => $faker->boolean,
+                'client_first_name' => $faker->firstName(),
+                'client_last_name' => $faker->lastName(),
+                'client_email' => $faker->email(),
+                'client_phone_number' => $faker->phoneNumber(),
+                'client_address' => $faker->address(),
+                'client_is_active' => $faker->boolean(),
             ];
         }
 
