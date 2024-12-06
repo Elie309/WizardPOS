@@ -90,4 +90,26 @@ $routes->group('api', function ($routes) {
         $routes->get('statuses', 'Reservations\ReservationController::statuses');
 
     });
+
+    // Orders
+    $routes->group('orders', function ($routes) {
+        $routes->get('/', 'Orders\OrderController::index');
+        $routes->get('(:num)', 'Orders\OrderController::show/$1');
+        $routes->post('/', 'Orders\OrderController::create');
+        $routes->post('(:num)', 'Orders\OrderController::update/$1');
+        $routes->delete('(:num)', 'Orders\OrderController::delete/$1');
+    });
+
+    // Order Items
+    $routes->group('order-items', function ($routes) {
+        $routes->get('(:num)', 'Orders\OrderItemController::list/$1');
+        $routes->post('/', 'Orders\OrderItemController::add');
+        $routes->delete('(:num)', 'Orders\OrderItemController::delete/$1');
+
+        //bulk add
+        $routes->post('bulk/(:num)', 'Orders\OrderItemController::bulkAdd/$1');
+
+        //bulk delete
+        $routes->delete('bulk', 'Orders\OrderItemController::bulkDelete');
+    });
 });

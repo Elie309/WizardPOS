@@ -119,25 +119,26 @@ CREATE TABLE reservations (
 
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_number VARCHAR(15) UNIQUE NOT NULL,
     order_client_id INT NOT NULL,
     order_employee_id INT NOT NULL,
+
+    order_type ENUM('take-away', 'dine-in', 'delivery') DEFAULT 'take-away',
+    order_reference VARCHAR(50) UNIQUE NULL,
 
     order_date DATE NOT NULL,
     order_time TIME NOT NULL,
     order_note TEXT NULL,
     
-    order_subtotal DECIMAL(10, 2) NOT NULL,
+    order_subtotal DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     order_discount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     order_tax DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     order_total DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
 
-    order_status ENUM('pending', 'processing', 'on-delivery', 'delivered', 'completed', 'cancelled', 'closed') NOT NULL DEFAULT 'pending',
-    order_payment_status ENUM('pending', 'paid', 'unpaid') NOT NULL DEFAULT 'pending',
-    order_payment_method ENUM('cash', 'card', 'paypal', 'stripe', 'other') NOT NULL DEFAULT 'cash',
+    order_status ENUM('on-going', 'completed', 'cancelled') DEFAULT 'on-going',
 
     order_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     order_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    order_deleted_at TIMESTAMP NULL,
 
     FOREIGN KEY (order_client_id) REFERENCES clients(client_id),
     FOREIGN KEY (order_employee_id) REFERENCES employees(employee_id)
@@ -152,6 +153,10 @@ CREATE TABLE order_items (
 
     order_item_quantity INT DEFAULT 1,
     order_item_total DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+
+    order_item_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    order_item_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    order_item_deleted_at TIMESTAMP NULL,
 
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (order_item_product_id) REFERENCES products(product_id)
