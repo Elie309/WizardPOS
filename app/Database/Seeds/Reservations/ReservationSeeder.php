@@ -12,17 +12,14 @@ class ReservationSeeder extends Seeder
         // Use faker
         $faker = \Faker\Factory::create();
 
-        // Load the database
-        $db = \Config\Database::connect();
-
         // Get data from clients table
-        $clients = $db->table('clients')->select('client_id')->get()->getResultArray();
+        $clients = $this->db->table('clients')->select('client_id')->get()->getResultArray();
 
         // Get data from restaurant_tables table
-        $tables = $db->table('restaurant_tables')->select('table_id')->get()->getResultArray();
+        $tables = $this->db->table('restaurant_tables')->select('table_id')->get()->getResultArray();
 
         // Get data from employees table
-        $employees = $db->table('employees')->select('employee_id')->get()->getResultArray();
+        $employees = $this->db->table('employees')->select('employee_id')->get()->getResultArray();
 
         // Insert fake reservations for the current day
         foreach ($tables as $table) {
@@ -32,9 +29,12 @@ class ReservationSeeder extends Seeder
                 //faker time
                 $startingTime = $faker->time();
                 //Add 1 to 3 hours randomly
-                $endingTime = date('H:i:s', strtotime($startingTime . ' + ' . $faker->numberBetween(1, 3) . ' hours'));
+                $startingDateTime = new \DateTime($startingTime);
+                $interval = new \DateInterval('PT' . $faker->numberBetween(1, 3) . 'H');
+                $startingDateTime->add($interval);
+                $endingTime = $startingDateTime->format('H:i:s');
 
-                $db->table('reservations')->insert([
+                $this->db->table('reservations')->insert([
                     'reservation_client_id' => $faker->randomElement($clients)['client_id'],
                     'reservation_table_id' => $table['table_id'],
                     'reservation_employee_id' => $faker->randomElement($employees)['employee_id'],
