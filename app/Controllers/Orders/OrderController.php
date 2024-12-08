@@ -10,6 +10,15 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class OrderController extends BaseController
 {
+
+    private $statuses = [
+        "on-going","completed","cancelled"
+    ];
+
+    private $types = [
+        "take-away","dine-in","delivery"
+    ];
+
     public function index()
     {
         $orderModel = new OrderModel();
@@ -184,6 +193,25 @@ class OrderController extends BaseController
         return $this->response->setJSON([
             'data' => null,
             'message' => 'Order deleted',
+            'errors' => null
+        ])->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
+
+    public function statuses()
+    {
+        return $this->response->setJSON([
+            'data' => $this->statuses,
+            'message' => 'Statuses found',
+            'errors' => null
+        ])->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
+    public function types()
+    {
+        return $this->response->setJSON([
+            'data' => $this->types,
+            'message' => 'Types found',
             'errors' => null
         ])->setStatusCode(ResponseInterface::HTTP_OK);
     }

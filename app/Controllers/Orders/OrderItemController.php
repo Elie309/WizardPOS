@@ -24,13 +24,14 @@ class OrderItemController extends BaseController
         ])->setStatusCode(ResponseInterface::HTTP_OK);
     }
 
-    public function add()
+    public function add($orderId)
     {
         $orderItemModel = new OrderItemModel();
         $orderItemEntity = new OrderItemEntity();
         $orderItemEntity->fill($this->request->getPost());
 
         unset($orderItemEntity->order_item_id);
+        $orderItemEntity->order_id = $orderId;
 
         if (!$orderItemModel->save($orderItemEntity)) {
             return $this->response->setJSON([
@@ -39,6 +40,7 @@ class OrderItemController extends BaseController
                 'errors' => $orderItemModel->errors()
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
+        $orderItemEntity->order_item_id = $orderItemModel->getInsertID();
 
         return $this->response->setJSON([
             'data' => $orderItemEntity,
@@ -48,10 +50,10 @@ class OrderItemController extends BaseController
     }
 
 
-    public function delete($id)
+    public function delete($orderId, $itemId)
     {
         $orderItemModel = new OrderItemModel();
-        $orderItem = $orderItemModel->find($id);
+        $orderItem = $orderItemModel->find($itemId);
 
         if (!$orderItem) {
             return $this->response->setJSON([
@@ -61,7 +63,16 @@ class OrderItemController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
-        if (!$orderItemModel->delete($id)) {
+        if($orderItem->order_id != $orderId){
+            return $this->response->setJSON([
+                'data' => null,
+                'message' => 'Order item not found',
+                'errors' => $orderItemModel->errors()
+            ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+        }
+        
+
+        if (!$orderItemModel->delete($itemId)) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Failed to delete order item',
@@ -118,10 +129,30 @@ class OrderItemController extends BaseController
     }
 
     //Bulk delete
-    public function bulkDelete()
+    public function bulkDelete($orderId)
     {
         $orderItemModel = new OrderItemModel();
         $orderItemIds = $this->request->getJSON();
+
+        $orderItems = $orderItemModel->find($orderItemIds);
+
+        if (!$orderItems) {
+            return $this->response->setJSON([
+                'data' => null,
+                'message' => 'Order items not found',
+                'errors' => $orderItemModel->errors()
+            ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+        }
+
+        foreach ($orderItems as $orderItem) {
+            if($orderItem->order_id != $orderId){
+                return $this->response->setJSON([
+                    'data' => null,
+                    'message' => 'Order items invalid',
+                    'errors' => $orderItemModel->errors()
+                ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+            }
+        }
 
         if (!$orderItemModel->delete($orderItemIds)) {
             return $this->response->setJSON([
