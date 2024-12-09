@@ -4,6 +4,7 @@ namespace App\Controllers\Orders;
 
 use App\Controllers\BaseController;
 use App\Entities\Orders\OrderEntity;
+use App\Models\Orders\OrderItemModel;
 use App\Models\Orders\OrderModel;
 use App\Models\Settings\EmployeeModel;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -12,11 +13,15 @@ class OrderController extends BaseController
 {
 
     private $statuses = [
-        "on-going","completed","cancelled"
+        "on-going",
+        "completed",
+        "cancelled"
     ];
 
     private $types = [
-        "take-away","dine-in","delivery"
+        "take-away",
+        "dine-in",
+        "delivery"
     ];
 
     public function index()
@@ -37,21 +42,61 @@ class OrderController extends BaseController
         }
 
         $orders = $orderModel->select('orders.*,
-                CONCAT(clients.client_first_name, " ",clients.client_last_name ) as client_name,
+                CONCAT(clients.client_first_name, " ", clients.client_last_name) as client_name,
                 clients.client_phone_number,
                 CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name,
-                ')
+                order_items.*,
+                products.product_name,
+                products.product_price')
             ->join('clients', 'clients.client_id = orders.order_client_id')
             ->join('employees', 'employees.employee_id = orders.order_employee_id')
+            ->join('order_items', 'order_items.order_id = orders.order_id', 'left')
+            ->join('products', 'products.product_id = order_items.order_item_product_id')
             ->where('order_date', $date)
             ->findAll();
-        return $this->response->setJSON([
-            'data' => $orders,
-            'message' => 'Orders found',
-            'errors' => null
-        ])->setStatusCode(ResponseInterface::HTTP_OK);
+
+        $groupedOrders = [];
+
+        foreach ($orders as $order) {
+            $orderId = $order->order_id;
+
+            if (!isset($groupedOrders[$orderId])) {
+                $groupedOrders[$orderId] = [
+                    'order_id' => $order->order_id,
+                    'order_client_id' => $order->order_client_id,
+                    'order_employee_id' => $order->order_employee_id,
+                    'order_type' => $order->order_type,
+                    'order_reference' => $order->order_reference,
+                    'order_date' => $order->order_date,
+                    'order_time' => $order->order_time,
+                    'order_note' => $order->order_note,
+                    'order_subtotal' => $order->order_subtotal,
+                    'order_discount' => $order->order_discount,
+                    'order_tax' => $order->order_tax,
+                    'order_total' => $order->order_total,
+                    'order_status' => $order->order_status,
+                    'order_created_at' => $order->order_created_at,
+                    'order_updated_at' => $order->order_updated_at,
+                    'order_deleted_at' => $order->order_deleted_at,
 
 
+                    'client_name' => $order->client_name,
+                    'client_phone_number' => $order->client_phone_number,
+                    'employee_name' => $order->employee_name,
+                    'order_items' => []
+                ];
+            }
+            $groupedOrders[$orderId]['order_items'][] = [
+                'order_item_id' => $order->order_item_id,
+                'order_item_product_id' => $order->order_item_product_id,
+                'order_item_quantity' => $order->order_item_quantity,
+                'order_item_total' => $order->order_item_total,
+                'product_name' => $order->product_name,
+                'product_price' => $order->product_price
+            ];
+        }
+
+        $orders = array_values($groupedOrders);
 
         return $this->response->setJSON([
             'data' => $orders,
@@ -146,7 +191,7 @@ class OrderController extends BaseController
         unset($orderEntity->order_updated_at);
         unset($orderEntity->order_employee_id);
 
-        if($oldOrder->order_reference === $orderEntity->order_reference){
+        if ($oldOrder->order_reference === $orderEntity->order_reference) {
             unset($orderEntity->order_reference);
         }
 
