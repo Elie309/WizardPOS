@@ -88,6 +88,7 @@ class OrderController extends BaseController
             }
             $groupedOrders[$orderId]['order_items'][] = [
                 'order_item_id' => $order->order_item_id,
+                'order_id' => $order->order_id,
                 'order_item_product_id' => $order->order_item_product_id,
                 'order_item_quantity' => $order->order_item_quantity,
                 'order_item_total' => $order->order_item_total,
