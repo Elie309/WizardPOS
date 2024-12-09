@@ -144,6 +144,7 @@ class OrderController extends BaseController
         $orderEntity->fill($this->request->getPost());
         unset($orderEntity->order_created_at);
         unset($orderEntity->order_updated_at);
+        unset($orderEntity->order_employee_id);
 
         if($oldOrder->order_reference === $orderEntity->order_reference){
             unset($orderEntity->order_reference);
