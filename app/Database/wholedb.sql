@@ -123,7 +123,7 @@ CREATE TABLE orders (
     order_employee_id INT NOT NULL,
 
     order_type ENUM('take-away', 'dine-in', 'delivery') DEFAULT 'take-away',
-    order_reference VARCHAR(50) UNIQUE NULL,
+    order_reference VARCHAR(50) UNIQUE NOT NULL,
 
     order_date DATE NOT NULL,
     order_time TIME NOT NULL,

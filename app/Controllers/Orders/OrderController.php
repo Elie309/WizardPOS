@@ -131,9 +131,9 @@ class OrderController extends BaseController
     {
         $orderModel = new OrderModel();
         $orderEntity = new OrderEntity();
-        $order = $orderModel->find($id);
+        $oldOrder = $orderModel->find($id);
 
-        if (!$order) {
+        if (!$oldOrder) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Order not found',
@@ -144,6 +144,24 @@ class OrderController extends BaseController
         $orderEntity->fill($this->request->getPost());
         unset($orderEntity->order_created_at);
         unset($orderEntity->order_updated_at);
+
+        if($oldOrder->order_reference === $orderEntity->order_reference){
+            unset($orderEntity->order_reference);
+        }
+
+        $employeeModel = new EmployeeModel();
+        $employee = $employeeModel->select('employee_id, employee_email')->where('employee_email', $this->user->email)->first();
+
+
+        if (!$employee) {
+            return $this->response->setJSON([
+                'data' => null,
+                'message' => 'Employee not found',
+                'errors' => $employeeModel->errors()
+            ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+        }
+
+        $orderEntity->order_employee_id = $employee->employee_id;
 
         if (!$orderModel->update($id, $orderEntity)) {
             return $this->response->setJSON([
