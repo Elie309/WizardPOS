@@ -136,6 +136,9 @@ class OrderController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
+        //ID
+        $orderEntity->order_id = $orderModel->getInsertID();
+
         return $this->response->setJSON([
             'data' => $orderEntity,
             'message' => 'Order created',
