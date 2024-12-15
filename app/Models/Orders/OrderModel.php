@@ -119,4 +119,10 @@ class OrderModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function generateReference($order_id): string
+    {
+        $newReference = "ORD-" . date('Y') . "-" . str_pad($order_id, 5, '0', STR_PAD_LEFT);
+        return $newReference;
+    }
 }

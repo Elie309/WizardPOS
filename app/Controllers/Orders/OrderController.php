@@ -112,20 +112,18 @@ class OrderController extends BaseController
         $orderEntity = new OrderEntity();
         $orderEntity->fill($this->request->getPost());
 
-
-        $employeeModel = new EmployeeModel();
-        $employee = $employeeModel->select('employee_id, employee_email')->where('employee_email', $this->user->email)->first();
-
-
+        $employee = $this->getEmployeeByEmail($this->user->email);
         if (!$employee) {
             return $this->response->setJSON([
                 'data' => null,
                 'message' => 'Employee not found',
-                'errors' => $employeeModel->errors()
+                'errors' => null
             ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
         $orderEntity->order_employee_id = $employee->employee_id;
+        unset($orderEntity->order_created_at, $orderEntity->order_updated_at, $orderEntity->order_deleted_at, $orderEntity->order_reference);
+        $orderEntity->order_reference = strtoupper(substr(uniqid(sha1(time())), 0, 6));
 
 
         if (!$orderModel->save($orderEntity)) {
@@ -136,15 +134,29 @@ class OrderController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-        //ID
         $orderEntity->order_id = $orderModel->getInsertID();
 
+        $newReference = $orderModel->generateReference($orderEntity->order_id);
+
+        $orderModel->update($orderEntity->order_id, ['order_reference' => $newReference]);
+
+        $order = $this->getOrderWithDetails($orderEntity->order_id);
+
         return $this->response->setJSON([
-            'data' => $orderEntity,
+            'data' => $order,
             'message' => 'Order created',
             'errors' => null
         ])->setStatusCode(ResponseInterface::HTTP_CREATED);
     }
+
+    private function getEmployeeByEmail($email)
+    {
+        $employeeModel = new EmployeeModel();
+        return $employeeModel->select('employee_id, employee_email')->where('employee_email', $email)->first();
+    }
+
+
+
 
     public function show($id)
     {
@@ -159,16 +171,7 @@ class OrderController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
-        $order = $orderModel->select('orders.*,
-                CONCAT(clients.client_first_name, " ",clients.client_last_name ) as client_name,
-                clients.client_phone_number,
-                CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name,
-                ')
-            ->join('clients', 'clients.client_id = orders.order_client_id')
-            ->join('employees', 'employees.employee_id = orders.order_employee_id')
-            ->where('order_id', $id)
-            ->first();
-
+        $order = $this->getOrderWithDetails($id);
 
         $orderItemModel = new OrderItemModel();
         $orderItems = $orderItemModel
@@ -200,27 +203,16 @@ class OrderController extends BaseController
         }
 
         $orderEntity->fill($this->request->getPost());
-        unset($orderEntity->order_created_at);
-        unset($orderEntity->order_updated_at);
+        unset($orderEntity->order_created_at, $orderEntity->order_updated_at, $orderEntity->order_deleted_at, $orderEntity->order_reference);
+
+        //unset employee_id
         unset($orderEntity->order_employee_id);
 
-        if ($oldOrder->order_reference === $orderEntity->order_reference) {
-            unset($orderEntity->order_reference);
+        // Check the order reference if it does not start with ORD-
+        if (strpos($oldOrder->order_reference, 'ORD-') === false) {
+            $orderEntity->order_reference = $orderModel->generateReference($id);
         }
-
-        $employeeModel = new EmployeeModel();
-        $employee = $employeeModel->select('employee_id, employee_email')->where('employee_email', $this->user->email)->first();
-
-
-        if (!$employee) {
-            return $this->response->setJSON([
-                'data' => null,
-                'message' => 'Employee not found',
-                'errors' => $employeeModel->errors()
-            ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
-        }
-
-        $orderEntity->order_employee_id = $employee->employee_id;
+       
 
         if (!$orderModel->update($id, $orderEntity)) {
             return $this->response->setJSON([
@@ -230,15 +222,7 @@ class OrderController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-        $order = $orderModel->select('orders.*,
-        CONCAT(clients.client_first_name, " ",clients.client_last_name ) as client_name,
-        clients.client_phone_number,
-        CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name,
-        ')
-            ->join('clients', 'clients.client_id = orders.order_client_id')
-            ->join('employees', 'employees.employee_id = orders.order_employee_id')
-            ->where('order_id', $id)
-            ->first();
+        $order = $this->getOrderWithDetails($id);
 
         return $this->response->setJSON([
             'data' => $order,
@@ -301,5 +285,21 @@ class OrderController extends BaseController
             'message' => 'Types found',
             'errors' => null
         ])->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
+
+    //METHODS
+
+    private function getOrderWithDetails($orderId)
+    {
+        $orderModel = new OrderModel();
+        return $orderModel->select('orders.*,
+                CONCAT(clients.client_first_name, " ", clients.client_last_name) as client_name,
+                clients.client_phone_number,
+                CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name')
+            ->join('clients', 'clients.client_id = orders.order_client_id')
+            ->join('employees', 'employees.employee_id = orders.order_employee_id')
+            ->where('order_id', $orderId)
+            ->first();
     }
 }
