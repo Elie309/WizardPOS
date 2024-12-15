@@ -118,4 +118,9 @@ $routes->group('api', function ($routes) {
 
     });
 
+    //Reports
+    $routes->group('reports', function ($routes) {
+        $routes->get('/', 'Orders\ReportController::byDate');
+    });
+
 });
