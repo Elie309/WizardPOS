@@ -90,23 +90,26 @@ class OrderItemController extends BaseController
     //Bulk add
     public function bulkAdd($orderId)
     {
-
         try {
+            $orderItemModel = new OrderItemModel();
+            $orderItemData = $this->request->getJSON();
 
-        $orderItemModel = new OrderItemModel();
-        $orderItemEntities = [];
-        $orderItemData = $this->request->getJSON();
-
+            $newItems = [];
+            $existingItems = [];
 
             foreach ($orderItemData as $orderItem) {
                 $orderItemEntity = new OrderItemEntity();
                 $orderItemEntity->fill((array) $orderItem);
-                unset($orderItemEntity->order_item_id);
                 $orderItemEntity->order_id = $orderId;
-                $orderItemEntities[] = $orderItemEntity;
+
+                if (isset($orderItemEntity->order_item_id)) {
+                    $existingItems[] = $orderItemEntity;
+                } else {
+                    $newItems[] = $orderItemEntity;
+                }
             }
 
-            if (!$orderItemModel->insertBatch($orderItemEntities)) {
+            if (!empty($newItems) && !$orderItemModel->insertBatch($newItems)) {
                 return $this->response->setJSON([
                     'data' => null,
                     'message' => 'Failed to create order items',
@@ -114,15 +117,25 @@ class OrderItemController extends BaseController
                 ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
             }
 
+            if (!empty($existingItems) && !$orderItemModel->updateBatch($existingItems, 'order_item_id')) {
+                return $this->response->setJSON([
+                    'data' => null,
+                    'message' => 'Failed to update order items',
+                    'errors' => $orderItemModel->errors()
+                ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+            }
+
             return $this->response->setJSON([
-                'data' => $orderItemEntities,
-                'message' => 'Order items created',
+                'data' => array_merge($newItems, $existingItems),
+                'message' => 'Order items processed',
                 'errors' => null
             ])->setStatusCode(ResponseInterface::HTTP_CREATED);
+
+            
         } catch (\Exception $e) {
             return $this->response->setJSON([
                 'data' => null,
-                'message' => 'Failed to create order items',
+                'message' => 'Failed to process order items',
                 'errors' => $e->getMessage()
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
