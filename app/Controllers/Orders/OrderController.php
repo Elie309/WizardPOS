@@ -169,6 +169,15 @@ class OrderController extends BaseController
             ->where('order_id', $id)
             ->first();
 
+
+        $orderItemModel = new OrderItemModel();
+        $orderItems = $orderItemModel
+            ->select("order_items.*, products.product_sku, products.product_name, products.product_price")
+            ->join('products', 'products.product_id = order_items.order_item_product_id')
+            ->where('order_id', $id)->findAll();
+
+        $order->order_items = $orderItems;
+
         return $this->response->setJSON([
             'data' => $order,
             'message' => 'Order found',
