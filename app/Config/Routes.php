@@ -123,4 +123,14 @@ $routes->group('api', function ($routes) {
         $routes->get('/', 'Orders\ReportController::byDate');
     });
 
+
+    //Employees
+    $routes->group('employees', function ($routes) {
+        $routes->get('/', 'Auth\AuthController::getAll');
+        $routes->get('(:num)', 'Auth\AuthController::getById/$1');
+        $routes->post('/', 'Auth\AuthController::register');
+        $routes->post('(:num)', 'Auth\AuthController::update/$1');
+        $routes->delete('(:num)', 'Auth\AuthController::delete/$1');
+    });
+
 });

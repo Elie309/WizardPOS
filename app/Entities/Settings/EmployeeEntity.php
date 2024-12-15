@@ -6,17 +6,7 @@ use CodeIgniter\Entity\Entity;
 
 class EmployeeEntity extends Entity
 {
-    protected $datamap = [
-        'id'           => 'employee_id',
-        'phone_number' => 'employee_phone_number',
-        'email'        => 'employee_email',
-        'password'     => 'employee_password',
-        'first_name'   => 'employee_first_name',
-        'last_name'    => 'employee_last_name',
-        'role'         => 'employee_role',
-        'is_active'    => 'employee_is_active',
-
-    ];
+    protected $datamap = [];
     protected $dates   = ['employee_created_at', 'employee_updated_at', 'employee_deleted_at'];
     protected $casts   = [
         'employee_id'           => 'integer',

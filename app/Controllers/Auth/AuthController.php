@@ -33,9 +33,9 @@ class AuthController extends BaseController
 
 
         if ($employeeEntity->employee_email) {
-            $employee = $employeeModel->where('employee_email', $employeeEntity->employee_email)->first();
+            $employee = $employeeModel->where('employee_email', $employeeEntity->employee_email)->where('employee_is_active', 1)->first();
         } else {
-            $employee = $employeeModel->where('employee_phone_number', $employeeEntity->employee_phone_number)->first();
+            $employee = $employeeModel->where('employee_phone_number', $employeeEntity->employee_phone_number)->where('employee_is_active', 1)->first();
         }
 
         if ($employee) {
@@ -90,9 +90,137 @@ class AuthController extends BaseController
             ->setStatusCode(ResponseInterface::HTTP_OK);
     }
 
+    public function register()
+    {
+
+        $role = $this->user->role;
+
+        if ($role != 'admin') {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Unauthorized to register employee',
+                    'errors' => null,
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
+
+        $employeeEntity = new EmployeeEntity();
+        $employeeEntity->fill($this->request->getPost());
+
+        if(!$employeeEntity->employee_password || trim($employeeEntity->employee_password) === ''){
+            return $this->response
+                ->setJSON([
+                    'message' => 'Password is required',
+                    'errors' => null,
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+        }
+
+        $employeeModel = new EmployeeModel();
+
+
+        $employeeEntity->setPassword($employeeEntity->employee_password);
+
+        if (!$employeeModel->save($employeeEntity)) {
+
+            return $this->response
+                ->setJSON([
+                    'message' => 'Employee not registered',
+                    'errors' => $employeeModel->errors(),
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+        }
+
+        $employee = $employeeModel->find($employeeModel->insertID());
+        unset($employee->employee_password);
+
+        return $this->response
+            ->setJSON([
+                'message' => 'Employee registered',
+                'errors' => null,
+                'data' => $employee
+            ])
+            ->setStatusCode(ResponseInterface::HTTP_CREATED);
+    }
+
+    public function getById($id)
+    {
+
+        $role = $this->user->role;
+
+        if ($role != 'admin') {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Unauthorized to get employee',
+                    'errors' => null,
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
+
+        $employeeModel = new EmployeeModel();
+        $employee = $employeeModel->find($id);
+
+        if (!$employee) {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Employee not found',
+                    'errors' => null,
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+        }
+
+        //unset password
+        unset($employee->employee_password);
+
+        return $this->response
+            ->setJSON([
+                'message' => 'Employee retrieved',
+                'errors' => null,
+                'data' => $employee
+            ])
+            ->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
+    public function getAll()
+    {
+
+        $role = $this->user->role;
+
+        if ($role != 'admin') {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Unauthorized to get employees',
+                    'errors' => null,
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
+
+        $employeeModel = new EmployeeModel();
+        $employees = $employeeModel->findAll();
+
+        //unset password
+        foreach ($employees as $employee) {
+            unset($employee->employee_password);
+        }
+
+        return $this->response
+            ->setJSON([
+                'message' => 'Employees retrieved',
+                'errors' => null,
+                'data' => $employees
+            ])
+            ->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
     public function getAuthenticatedUser()
     {
-        
+
         return $this->response
             ->setJSON([
                 'message' => 'Employee logged in',
@@ -101,6 +229,124 @@ class AuthController extends BaseController
                     'email' => $this->user->email,
                     'role' => $this->user->role,
                 ]
+            ])
+            ->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
+
+    public function update($id)
+    {
+        $role = $this->user->role;
+
+        if ($role != 'admin') {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Unauthorized to update employee',
+                    'errors' => null,
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
+
+        $employeeEntity = new EmployeeEntity();
+        $employeeEntity->fill($this->request->getPost());
+
+        $employeeModel = new EmployeeModel();
+        $oldEmployee = $employeeModel->find($id);
+
+        if (!$oldEmployee) {
+            return $this->response->setJSON([
+                'message' => 'Employee not found',
+                'errors' => $employeeModel->errors(),
+                'data' => null
+            ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+        }
+
+        //if password is set
+        if ($employeeEntity->employee_password) {
+            //verify password
+            if ($employeeEntity->verifyPassword($oldEmployee->employee_password)) {
+                unset($employeeEntity->employee_password);
+            } else {
+                $employeeEntity->setPassword($employeeEntity->employee_password);
+            }
+        }
+
+        //CHeck emails if similar then unset
+        if($oldEmployee->employee_email == $employeeEntity->employee_email){
+            unset($employeeEntity->employee_email);
+        }
+
+        //Check phone numbers if similar then unset
+        if($oldEmployee->employee_phone_number === $employeeEntity->employee_phone_number){
+            unset($employeeEntity->employee_phone_number);
+        }
+
+
+        if (!$employeeModel->update($id, $employeeEntity)) {
+            return $this->response->setJSON([
+                'message' => 'Employee not updated',
+                'errors' => $employeeModel->errors(),
+                'data' => null
+            ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+        }
+
+        $employee = $employeeModel->find($id);
+
+        unset($employee->employee_password);
+
+
+        return $this->response->setJSON([
+            'data' => $employee,
+            'message' => 'Employee updated',
+            'errors' => null
+        ])->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
+
+    public function delete($id)
+    {
+
+        $role = $this->user->role;
+
+        if ($role != 'admin') {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Unauthorized to delete employee',
+                    'errors' => null,
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
+
+        $employeeModel = new EmployeeModel();
+        $employee = $employeeModel->find($id);
+
+        if (!$employee) {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Employee not found',
+                    'errors' => null,
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
+        }
+
+        if (!$employeeModel->delete($id)) {
+            return $this->response
+                ->setJSON([
+                    'message' => 'Employee not deleted',
+                    'errors' => $employeeModel->errors(),
+                    'data' => null
+                ])
+                ->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+        }
+
+        return $this->response
+            ->setJSON([
+                'message' => 'Employee deleted',
+                'errors' => null,
+                'data' => null
             ])
             ->setStatusCode(ResponseInterface::HTTP_OK);
     }

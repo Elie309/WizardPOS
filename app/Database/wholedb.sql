@@ -1,8 +1,8 @@
 
 CREATE TABLE employees (
     employee_id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_phone_number VARCHAR(15) UNIQUE NOT NULL,
-    employee_email VARCHAR(100) UNIQUE NULL,
+    employee_phone_number VARCHAR(20) UNIQUE NOT NULL,
+    employee_email VARCHAR(100) UNIQUE NOT NULL,
     employee_password VARCHAR(255) NOT NULL,
 
     employee_first_name VARCHAR(50) NOT NULL,

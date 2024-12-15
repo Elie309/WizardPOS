@@ -38,9 +38,9 @@ class EmployeeModel extends Model
     // Validation
     protected $validationRules      = [
         'employee_id'           => 'permit_empty|numeric',
-        'employee_phone_number'       => 'required|numeric|max_length[15]|is_unique[employees.employee_phone_number]',
+        'employee_phone_number'       => 'required|max_length[20]|is_unique[employees.employee_phone_number]',
         'employee_email'        => 'required|valid_email|max_length[100]|is_unique[employees.employee_email]',
-        'employee_password'     => 'required|string|max_length[255]',
+        'employee_password'     => 'permit_empty|string|max_length[255]',
         'employee_first_name'   => 'required|string|max_length[50]',
         'employee_last_name'    => 'required|string|max_length[50]',
         'employee_role'         => 'required|string|in_list[admin,manager,user]',
