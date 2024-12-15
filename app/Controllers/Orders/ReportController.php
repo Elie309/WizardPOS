@@ -27,6 +27,7 @@ class ReportController extends BaseController
 
         $orders = $orderModel
             ->select("orders.*, CONCAT(clients.client_first_name, ' ', clients.client_last_name) as client_name, 
+            clients.client_phone_number,
             CONCAT(employees.employee_first_name, ' ',employees.employee_last_name) as employee_name")
             ->join('clients', 'clients.client_id = orders.order_client_id')
             ->join('employees', 'employees.employee_id = orders.order_employee_id');
