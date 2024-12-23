@@ -41,21 +41,41 @@ class OrderController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-        $orders = $orderModel->select('orders.*,
-                CONCAT(clients.client_first_name, " ", clients.client_last_name) as client_name,
-                clients.client_phone_number,
-                CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name,
-                order_items.*,
-                products.product_name,
-                products.product_price')
+        $orders = $orderModel->select('orders.order_id,
+        orders.order_client_id,
+        orders.order_employee_id,
+        orders.order_type,
+        orders.order_reference,
+        orders.order_date,
+        orders.order_time,
+        orders.order_note,
+        orders.order_subtotal,
+        orders.order_discount,
+        orders.order_tax,
+        orders.order_total,
+        orders.order_status,
+        orders.order_created_at,
+        orders.order_updated_at,
+        orders.order_deleted_at,
+        CONCAT(clients.client_first_name, " ", clients.client_last_name) as client_name,
+        clients.client_phone_number,
+        CONCAT(employees.employee_first_name, " ", employees.employee_last_name) as employee_name,
+        order_items.order_item_id,
+        order_items.order_item_product_id,
+        order_items.order_item_quantity,
+        order_items.order_item_total,
+        products.product_name,
+        products.product_price')
             ->join('clients', 'clients.client_id = orders.order_client_id')
             ->join('employees', 'employees.employee_id = orders.order_employee_id')
             ->join('order_items', 'order_items.order_id = orders.order_id', 'left')
-            ->join('products', 'products.product_id = order_items.order_item_product_id')
+            ->join('products', 'products.product_id = order_items.order_item_product_id', 'left')
             ->where('order_date', $date)
             ->findAll();
 
         $groupedOrders = [];
+
+        log_message('info', 'Orders: ' . json_encode($orders));
 
         foreach ($orders as $order) {
             $orderId = $order->order_id;
@@ -86,15 +106,17 @@ class OrderController extends BaseController
                     'order_items' => []
                 ];
             }
-            $groupedOrders[$orderId]['order_items'][] = [
-                'order_item_id' => $order->order_item_id,
-                'order_id' => $order->order_id,
-                'order_item_product_id' => $order->order_item_product_id,
-                'order_item_quantity' => $order->order_item_quantity,
-                'order_item_total' => $order->order_item_total,
-                'product_name' => $order->product_name,
-                'product_price' => $order->product_price
-            ];
+            if ($order->order_item_id) {
+                $groupedOrders[$orderId]['order_items'][] = [
+                    'order_item_id' => $order->order_item_id,
+                    'order_id' => $order->order_id,
+                    'order_item_product_id' => $order->order_item_product_id,
+                    'order_item_quantity' => $order->order_item_quantity,
+                    'order_item_total' => $order->order_item_total,
+                    'product_name' => $order->product_name,
+                    'product_price' => $order->product_price
+                ];
+            }
         }
 
         $orders = array_values($groupedOrders);
@@ -212,7 +234,7 @@ class OrderController extends BaseController
         if (strpos($oldOrder->order_reference, 'ORD-') === false) {
             $orderEntity->order_reference = $orderModel->generateReference($id);
         }
-       
+
 
         if (!$orderModel->update($id, $orderEntity)) {
             return $this->response->setJSON([
