@@ -52,7 +52,6 @@ class Cors extends BaseConfig
          *   - ['https://\w+\.example\.com']
          */
         'allowedOriginsPatterns' => [
-            "http://localhost:\d+"
         ],
 
         /**
