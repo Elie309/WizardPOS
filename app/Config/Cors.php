@@ -51,6 +51,7 @@ class Cors extends BaseConfig
          */
         'allowedOriginsPatterns' => [
             'http://localhost:\d+',
+            "http://34.155.85.219:\d+"
         ],
 
         /**
