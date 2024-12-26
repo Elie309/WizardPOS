@@ -19,7 +19,7 @@ class JWTHelper
     {
         $key = getenv('JWT_SECRET');
         $iat = time();
-        $exp = $iat + 3600;
+        $exp = $iat + (3600 * 24 );
 
         $payload = array(
             "iss" => "user_wizardpos",
