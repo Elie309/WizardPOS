@@ -35,9 +35,9 @@ class Cors extends BaseConfig
          *   - ['https://www.example.com']
          */
         'allowedOrigins' => [
-            "http://34.155.85.219"
-            
-
+            "http://34.155.85.219",
+            "http://localhost:5173",
+            "http://localhost:5174",
         ],
 
         /**
